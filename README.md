@@ -28,13 +28,10 @@ FashionHub-Retail-Analytics/
 ├── 03_PowerBI/
 │   └── FashionHub_Retail_Analytics.pbix      (6-page executive dashboard)
 │
-├── 04_Documentation/
-│   ├── Business_Problem.md
-│   ├── KPI_Definitions.md
-│   └── Business_Insights_and_Recommendations.md   (real numbers, not placeholders)
-│
-└── 07_Portfolio/
-    └── Resume_Project_Summary.md
+└── 04_Documentation/
+    ├── Business_Problem.md
+    ├── KPI_Definitions.md
+    └── Business_Insights_and_Recommendations.md   (real numbers, not placeholders)
 ```
 
 **What I deliberately left out**, so it's not a surprise later: dashboard screenshots, a PPTX presentation, banner/logo images, and a DAX measures doc. I can't generate real screenshots or extract DAX from a `.pbix` without opening it in Power BI Desktop myself — faking them would defeat the point of a portfolio piece. Open the `.pbix`, export what you actually want shown (`File → Export → PDF` gives you a quick screenshot set), and drop it in a `03_PowerBI/Dashboard_Screenshots/` folder if you want that in the repo.
@@ -104,10 +101,6 @@ Full detail with every number in [`04_Documentation/Business_Insights_and_Recomm
 - **Country and age aren't real differentiators** — margin is flat (43.3–44.7%) across both; revenue differences are pure customer-count differences.
 - **349 of 1,000 stock lines are dead stock** (9,424 units, zero sales) while a separate set of products are already selling 13–17x their current stock — an inventory rebalancing problem that wasn't part of the original project scope but was sitting in the data.
 
-## Known Limitations
-
-Documented in full in [`Business_Problem.md`](04_Documentation/Business_Problem.md). The short version: brand and gender fields are single-valued in this dataset (no comparison possible), `campaigns.csv` isn't linked to any transaction table, and the sales history window is short (~2.5 months), which limits the cohort/acquisition-timing analysis. These are called out rather than hidden — a portfolio piece that flags its own data's limits is more credible than one that pretends the data is perfect.
-
 ## Tech Stack
 
-SQL Server (T-SQL) · Power BI · DuckDB (used to independently verify every figure in the insights doc against the raw CSVs)
+SQL Server (T-SQL) · Power BI )
