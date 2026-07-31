@@ -95,13 +95,6 @@ Six pages in `03_PowerBI/FashionHub_Retail_Analytics.pbix`:
 5. **Channel & Geographic Analysis** — E-commerce vs. App Mobile, country scorecards
 6. **Product Insights & Recommendations** — action list
 
-## How to reproduce
-
-1. Run `02_SQL/01_Table_Creation.sql` against a SQL Server instance to create `sprj1` and the 7 tables.
-2. Import the CSVs from `01_Dataset/` in this order (FK dependencies): `customers`, `products`, `channels`, `campaigns` → `sales` → `salesitems`, `stock`.
-3. Run `02_Business_Queries.sql` and `03_Inventory_Queries.sql` to reproduce every number in the insights doc.
-4. Open `03_PowerBI/FashionHub_Retail_Analytics.pbix` in Power BI Desktop and point the data source at the same SQL Server instance (or re-import the CSVs directly).
-
 ## Key Findings
 
 Full detail with every number in [`04_Documentation/Business_Insights_and_Recommendations.md`](04_Documentation/Business_Insights_and_Recommendations.md). Headlines:
