@@ -1,2 +1,120 @@
-# fashionhub-profitability-analytics
-SQL Server + Power BI analysis tracing why FashionHub's revenue growth wasn't converting to profit — found discounts above 10% were cutting margin nearly in half for almost no extra volume. 7-table relational model, 25+ T-SQL queries, 6-page executive dashboard.
+# FashionHub Retail Analytics
+
+End-to-end retail analytics project: raw transactional data → SQL business logic → Power BI executive dashboard. Built around a single question senior leadership actually asks — *revenue is growing, so why isn't profit growing with it?*
+
+## The Business Problem
+
+FashionHub sells across two channels (E-commerce, App Mobile) in six European countries. Sales, Merchandising, and Inventory each report separately, so leadership has no single view of what's actually driving — or eroding — profit. Full write-up: [`04_Documentation/Business_Problem.md`](04_Documentation/Business_Problem.md).
+
+## What's in this repo
+
+```
+FashionHub-Retail-Analytics/
+├── README.md
+├── LICENSE
+├── .gitignore
+│
+├── 01_Dataset/
+│   ├── customers.csv, products.csv, sales.csv, salesitems.csv, stock.csv,
+│   │   campaigns.csv, channels.csv          (7 tables, ~5,900 rows)
+│   └── Data_Dictionary.md                    (schema + known data quality notes)
+│
+├── 02_SQL/
+│   ├── 01_Table_Creation.sql                 (T-SQL DDL matching the actual CSVs)
+│   ├── 02_Business_Queries.sql               (revenue, profit, discount, customer,
+│   │                                           channel, geography — organized by workstream)
+│   └── 03_Inventory_Queries.sql              (dead stock / stockout risk — new, see below)
+│
+├── 03_PowerBI/
+│   └── FashionHub_Retail_Analytics.pbix      (6-page executive dashboard)
+│
+├── 04_Documentation/
+│   ├── Business_Problem.md
+│   ├── KPI_Definitions.md
+│   └── Business_Insights_and_Recommendations.md   (real numbers, not placeholders)
+│
+└── 07_Portfolio/
+    └── Resume_Project_Summary.md
+```
+
+**What I deliberately left out**, so it's not a surprise later: dashboard screenshots, a PPTX presentation, banner/logo images, and a DAX measures doc. I can't generate real screenshots or extract DAX from a `.pbix` without opening it in Power BI Desktop myself — faking them would defeat the point of a portfolio piece. Open the `.pbix`, export what you actually want shown (`File → Export → PDF` gives you a quick screenshot set), and drop it in a `03_PowerBI/Dashboard_Screenshots/` folder if you want that in the repo.
+
+## Data Model
+
+```mermaid
+erDiagram
+    CUSTOMERS ||--o{ SALES : places
+    SALES ||--o{ SALESITEMS : contains
+    PRODUCTS ||--o{ SALESITEMS : "sold in"
+    PRODUCTS ||--o{ STOCK : "stocked as"
+
+    CUSTOMERS {
+        int customer_id PK
+        string country
+        string age_range
+        date signup_date
+    }
+    PRODUCTS {
+        int product_id PK
+        string category
+        string brand
+        decimal catalog_price
+        decimal cost_price
+    }
+    SALES {
+        int sale_id PK
+        int customer_id FK
+        string channel
+        date sale_date
+    }
+    SALESITEMS {
+        int item_id PK
+        int sale_id FK
+        int product_id FK
+        int quantity
+        decimal unit_price
+        decimal discount_applied
+    }
+    STOCK {
+        string country PK
+        int product_id PK, FK
+        int stock_quantity
+    }
+```
+
+`campaigns.csv` and `channels.csv` exist as reference tables but aren't wired into the transactional data — see [`Data_Dictionary.md`](01_Dataset/Data_Dictionary.md) for why.
+
+## Dashboard
+
+Six pages in `03_PowerBI/FashionHub_Retail_Analytics.pbix`:
+
+1. **Executive Summary** — top-line KPI cards and trend
+2. **Revenue and Profitability** — product/category/brand cut
+3. **Customer Analytics** — age, country, top customers, acquisition timing
+4. **Pricing and Discount Analysis** — discount bands vs. margin
+5. **Channel & Geographic Analysis** — E-commerce vs. App Mobile, country scorecards
+6. **Product Insights & Recommendations** — action list
+
+## How to reproduce
+
+1. Run `02_SQL/01_Table_Creation.sql` against a SQL Server instance to create `sprj1` and the 7 tables.
+2. Import the CSVs from `01_Dataset/` in this order (FK dependencies): `customers`, `products`, `channels`, `campaigns` → `sales` → `salesitems`, `stock`.
+3. Run `02_Business_Queries.sql` and `03_Inventory_Queries.sql` to reproduce every number in the insights doc.
+4. Open `03_PowerBI/FashionHub_Retail_Analytics.pbix` in Power BI Desktop and point the data source at the same SQL Server instance (or re-import the CSVs directly).
+
+## Key Findings
+
+Full detail with every number in [`04_Documentation/Business_Insights_and_Recommendations.md`](04_Documentation/Business_Insights_and_Recommendations.md). Headlines:
+
+- **Discounting above 10% is a clear net loss.** Margin drops from 44.9% (no discount) to 18.6–23.8% (21%+ discount bands), for only 96 units of extra volume out of 6,715 total.
+- **E-commerce outperforms App Mobile on every metric while discounting ~9x less** (0.25% avg discount vs 2.18%).
+- **Country and age aren't real differentiators** — margin is flat (43.3–44.7%) across both; revenue differences are pure customer-count differences.
+- **349 of 1,000 stock lines are dead stock** (9,424 units, zero sales) while a separate set of products are already selling 13–17x their current stock — an inventory rebalancing problem that wasn't part of the original project scope but was sitting in the data.
+
+## Known Limitations
+
+Documented in full in [`Business_Problem.md`](04_Documentation/Business_Problem.md). The short version: brand and gender fields are single-valued in this dataset (no comparison possible), `campaigns.csv` isn't linked to any transaction table, and the sales history window is short (~2.5 months), which limits the cohort/acquisition-timing analysis. These are called out rather than hidden — a portfolio piece that flags its own data's limits is more credible than one that pretends the data is perfect.
+
+## Tech Stack
+
+SQL Server (T-SQL) · Power BI · DuckDB (used to independently verify every figure in the insights doc against the raw CSVs)
