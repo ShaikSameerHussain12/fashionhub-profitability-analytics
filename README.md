@@ -34,8 +34,6 @@ FashionHub-Retail-Analytics/
     └── Business_Insights_and_Recommendations.md   (real numbers, not placeholders)
 ```
 
-**What I deliberately left out**, so it's not a surprise later: dashboard screenshots, a PPTX presentation, banner/logo images, and a DAX measures doc. I can't generate real screenshots or extract DAX from a `.pbix` without opening it in Power BI Desktop myself — faking them would defeat the point of a portfolio piece. Open the `.pbix`, export what you actually want shown (`File → Export → PDF` gives you a quick screenshot set), and drop it in a `03_PowerBI/Dashboard_Screenshots/` folder if you want that in the repo.
-
 ## Data Model
 
 ```mermaid
